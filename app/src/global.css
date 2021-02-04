@@ -1,0 +1,12 @@
+body {
+  background-color: #fff;
+}
+
+#selected-image {
+  display: none;
+  width: 100%;
+}
+
+#selected-image:not([src=""]) {
+  display: block;
+}
