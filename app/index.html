@@ -11,11 +11,13 @@
       <h1>Image Sonification</h1>
     </header>
     <p>Select an image below to start the sonification process:</p>
-    <button onclick="selectImage()" id="select-image">Select Image</button>
+    <input type="file" id="select-image">
     <br>
     <img src="" alt="Selected Image" id="selected-image">
-    <button onclick="playImage()" id="play-image" style="display: none">Play!</button>
+    <progress value="0" max="100" id="progress-bar" style="display:block;width:100%"></progress>
+    <button id="play-image" style="display: none">Play!</button>
     <pre id="progress"></pre>
-    <script src="./src/index.js"></script>
+    <script src="./src/bundle.js"></script>
+    <!--<script src="./src/index.js"></script>-->
   </body>
 </html>

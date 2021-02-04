@@ -1,30 +1,11 @@
-"use strict";
-
 //Import modules
-const { app, BrowserWindow } = require('electron')
+const express = require('express');
 
-function createWindow () {
-  const win = new BrowserWindow({
-    webPreferences: {
-      nodeIntegration: true,
-      enableRemoteModule: true
-    }
-  });
+const app = express();
 
-  win.loadFile('./app/index.html');
-  win.maximize();
-}
+app.use(express.static('app'));
+app.use(express.urlencoded({ extended: true }));
 
-app.whenReady().then(createWindow);
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+app.listen(80, () => {
+  console.log(`Server running on port ${80}`);
 });

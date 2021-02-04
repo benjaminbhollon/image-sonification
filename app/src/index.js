@@ -1,21 +1,18 @@
-const { dialog } = require('electron').remote;
-const Jimp = require('jimp');
-let filePath = "";
-let colors = [];
-let notes = [];
-let progress = document.getElementById("progress");
-const minFreq = 65.41;
-const maxFreq = 2637.02;
-const range = maxFreq - minFreq;
+var filePath = "";
+var colors = [];
+var notes = [];
+var minFreq = 65.41;
+var maxFreq = 2637.02;
+var range = maxFreq - minFreq;
 
 // RGB to HSL based on https://github.com/CodeDrome/hslrgb-conversions-javascript/blob/master/rgbhsl.js
 function calculateHue (R, G, B) {
-	let Max = 0.0;
-	let Min = 0.0;
+	var Max = 0.0;
+	var Min = 0.0;
 
-	let fR = R / 255.0;
-	let fG = G / 255.0;
-	let fB = B / 255.0;
+	var fR = R / 255.0;
+	var fG = G / 255.0;
+	var fB = B / 255.0;
 
 	if(fR >= fG && fR >= fB)
 		Max = fR;
@@ -31,7 +28,7 @@ function calculateHue (R, G, B) {
 	else if(fB <= fG && fB <= fR)
 		Min = fB;
 
-	let Hue;
+	var Hue;
 
 	if(Max == Min)
 	{
@@ -63,12 +60,12 @@ function calculateHue (R, G, B) {
 	return Hue;
 }
 function calculateLightness (R, G, B) {
-	let Max = 0.0
-	let Min = 0.0
+	var Max = 0.0
+	var Min = 0.0
 
-	let fR = R / 255.0;
-	let fG = G / 255.0;
-	let fB = B / 255.0;
+	var fR = R / 255.0;
+	var fG = G / 255.0;
+	var fB = B / 255.0;
 
 	if(fR >= fG && fR >= fB)
 		Max = fR;
@@ -84,41 +81,41 @@ function calculateLightness (R, G, B) {
 	else if(fB <= fG && fB <= fR)
 		Min = fB;
 
-	let Lightness = (Min + Max) / 2.0;
+	var Lightness = (Min + Max) / 2.0;
 
 	return Lightness;
 }
 
 //Code for playing sounds is based on https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Simple_synth
 
-function selectImage() {
-  dialog.showOpenDialog({"filters": [{"name": "Image", "extensions": ["jpg", "png"]}]}).then(result => {
-    if (result.canceled !== true) {
-      filePath = result.filePaths[0];
-      document.getElementById("select-image").style.display = "none";
-      document.getElementById("selected-image").src = filePath;
-			sonifyImage();
-    }
-  });
+function selectImage(e) {
+	var file = e.target.files[0];
+  var reader = new FileReader();
+  reader.readAsDataURL(file,'UTF-8');
+	reader.onload = readerEvent => {
+		document.getElementById("selected-image").src = readerEvent.target.result;
+		sonifyImage();
+	};
 }
 
 function sonifyImage() {
   colors = [];
-  progress.innerText += "Reading file...";
-  Jimp.read(filePath, (err, image) => {
+  var progress = document.getElementById("progress");
+	progress.innerText += "Reading file...";
+  Jimp.read(document.getElementById("selected-image").src, (err, image) => {
     progress.innerText += "\nCalculating colors...";
     if (err) throw err;
     for (var f = 0; f < image.bitmap.width; f++) {
-      let currentColor = {color: -1, start: -1};
+      var currentColor = {color: -1, start: -1};
       colors[f] = [];
       image.scan(f, 0, 1, image.bitmap.height, (x, y, idx) => {
-        const pixelColor = Jimp.intToRGBA(image.getPixelColor(x, y));
-        const hue = calculateHue(pixelColor.r, pixelColor.g, pixelColor.b);
-        const color = Math.floor(hue / 36) * 36;
+        var pixelColor = Jimp.intToRGBA(image.getPixelColor(x, y));
+        var hue = calculateHue(pixelColor.r, pixelColor.g, pixelColor.b);
+        var color = Math.floor(hue / 36) * 36;
         if (hue !== -1) {
           if (color !== currentColor.color) {
             if (currentColor.color !== -1) {
-              const middlePixelColor = Jimp.intToRGBA(image.getPixelColor(x, currentColor.start + Math.floor((y - 1 - currentColor.start) / 2)));
+              var middlePixelColor = Jimp.intToRGBA(image.getPixelColor(x, currentColor.start + Math.floor((y - 1 - currentColor.start) / 2)));
               colors[x].push({color: currentColor.color, start: currentColor.start, end: y - 1, lightness: calculateLightness(middlePixelColor.r, middlePixelColor.b, middlePixelColor.g)});
             }
             currentColor.color = color;
@@ -130,10 +127,10 @@ function sonifyImage() {
 
     progress.innerText += "\nGenerating Music...\n    Calculating notes...";
     for (var f in colors) {
-      const frame = colors[f];
+      var frame = colors[f];
       notes[f] = [];
       for (var n in colors[f]) {
-        const note = frame[n];
+        var note = frame[n];
 				if (note.lightness > 0.3) {
 					notes[f].push({volume: (note.end - note.start) / image.bitmap.height, pitch: (range * ((note.lightness - 0.3) / 0.7)) + minFreq});
 				}
@@ -147,15 +144,15 @@ function sonifyImage() {
 
 function playImage() {
 	console.clear();
-	let frame = 0;
+	var frame = 0;
 	function playFrame() {
 		console.log(frame);
 
 		function playTone(freq) {
-		  let osc = audioContext.createOscillator();
+		  var osc = audioContext.createOscillator();
 		  osc.connect(masterGainNode);
 
-		  let type = wavePicker.options[wavePicker.selectedIndex].value;
+		  var type = wavePicker.options[wavePicker.selectedIndex].value;
 
 		  if (type == "custom") {
 		    osc.setPeriodicWave(customWaveform);
