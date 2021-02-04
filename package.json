@@ -1,0 +1,25 @@
+{
+  "name": "image-sonification",
+  "version": "0.1.0",
+  "description": "A program designed to take pictures and turn them into a musical symphony.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjaminbhollon/image-sonification.git"
+  },
+  "author": "Benjamin Hollon",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/benjaminbhollon/image-sonification/issues"
+  },
+  "homepage": "https://github.com/benjaminbhollon/image-sonification#readme",
+  "devDependencies": {
+    "electron": "^11.2.2"
+  },
+  "dependencies": {
+    "jimp": "^0.16.1"
+  }
+}
