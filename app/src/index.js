@@ -97,13 +97,12 @@ function selectImage() {
       filePath = result.filePaths[0];
       document.getElementById("select-image").style.display = "none";
       document.getElementById("selected-image").src = filePath;
-      document.getElementById("sonify-image").style.display = "initial";
+			sonifyImage();
     }
   });
 }
 
 function sonifyImage() {
-  document.getElementById('sonify-image').style.display = "none";
   colors = [];
   progress.innerText += "Reading file...";
   Jimp.read(filePath, (err, image) => {
@@ -140,12 +139,39 @@ function sonifyImage() {
 				}
       }
     }
-    console.log(notes);
-
-    /*setInterval(() => {
-
-    }, 500);*/
 
     progress.innerText += "\nDone!";
+		document.getElementById("play-image").style.display = "initial";
   });
+}
+
+function playImage() {
+	console.clear();
+	let frame = 0;
+	function playFrame() {
+		console.log(frame);
+
+		function playTone(freq) {
+		  let osc = audioContext.createOscillator();
+		  osc.connect(masterGainNode);
+
+		  let type = wavePicker.options[wavePicker.selectedIndex].value;
+
+		  if (type == "custom") {
+		    osc.setPeriodicWave(customWaveform);
+		  } else {
+		    osc.type = type;
+		  }
+
+		  osc.frequency.value = freq;
+		  osc.start();
+
+		  return osc;
+		}
+
+		frame++;
+		if (frame === notes.length) console.log("Done!");
+		else setTimeout(playFrame, 200)
+	}
+	setTimeout(playFrame, 200);
 }
