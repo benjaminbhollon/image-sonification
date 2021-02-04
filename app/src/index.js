@@ -79,7 +79,7 @@ function sonifyImage() {
       image.scan(f, 0, 1, image.bitmap.height, (x, y, idx) => {
         const pixelColor = Jimp.intToRGBA(image.getPixelColor(x, y));
         const hue = calculateHue(pixelColor.r, pixelColor.g, pixelColor.b);
-        const color = Math.floor(hue / 36) * 36;
+        const color = Math.floor(hue / 72) * 72;
         if (hue !== -1) {
           if (color !== currentColor.color) {
             if (currentColor.color !== -1) {
